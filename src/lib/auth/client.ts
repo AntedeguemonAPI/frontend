@@ -70,7 +70,7 @@ class AuthClient {
 
       if (!res.ok) {
         const { message } = await res.json().catch(() => ({ message: 'Erro desconhecido.' }));
-        return { error: message || 'Falha ao autenticar.' };
+        return { error: message || 'Senha errada.' };
       }
 
       const response = await res.json();
