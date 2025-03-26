@@ -1,8 +1,10 @@
 export interface User {
   id: string;
-  name?: string;
-  avatar?: string;
-  email?: string;
+  email: string;
+  firstName: string;
+  avatar: string;
+  isAdmin?: boolean;
+  isViewer?: boolean;
 
   [key: string]: unknown;
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import RouterLink from 'next/link';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Alert from '@mui/material/Alert';
@@ -22,12 +21,12 @@ import { useUser } from '@/hooks/use-user';
 
 const schema = zod.object({
   email: zod.string().min(1, { message: 'O e-mail é obrigatório' }).email(),
-  password: zod.string().min(1, { message: 'A senha é obrigatória.' }),
+  senha: zod.string().min(1, { message: 'A senha é obrigatória.' }),
 });
 
 type Values = zod.infer<typeof schema>;
 
-const defaultValues = { email: 'sofia@devias.io', password: 'Secret1' } satisfies Values;
+const defaultValues = { email: 'adm@antedeguemon.com', senha: 'adm' } satisfies Values;
 
 export function SignInForm(): React.JSX.Element {
   const router = useRouter();
@@ -90,9 +89,9 @@ export function SignInForm(): React.JSX.Element {
           />
           <Controller
             control={control}
-            name="password"
+            name="senha"
             render={({ field }) => (
-              <FormControl error={Boolean(errors.password)}>
+              <FormControl error={Boolean(errors.senha)}>
                 <InputLabel>Senha</InputLabel>
                 <OutlinedInput
                   {...field}
@@ -118,7 +117,7 @@ export function SignInForm(): React.JSX.Element {
                   label="Senha"
                   type={showPassword ? 'text' : 'password'}
                 />
-                {errors.password ? <FormHelperText>{errors.password.message}</FormHelperText> : null}
+                {errors.senha ? <FormHelperText>{errors.senha.message}</FormHelperText> : null}
               </FormControl>
             )}
           />

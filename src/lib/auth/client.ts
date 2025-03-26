@@ -1,20 +1,23 @@
 'use client';
 
+import { jwtDecode } from 'jwt-decode';
+
 import type { User } from '@/types/user';
+
+function decodeJwt<T = any>(token: string): T | null {
+  try {
+    return jwtDecode<T>(token);
+  } catch (err) {
+    console.error('[decodeJwt] Failed to decode token:', err);
+    return null;
+  }
+}
 
 function generateToken(): string {
   const arr = new Uint8Array(12);
   window.crypto.getRandomValues(arr);
   return Array.from(arr, (v) => v.toString(16).padStart(2, '0')).join('');
 }
-
-const user = {
-  id: 'USR-000',
-  avatar: '/assets/avatar.png',
-  firstName: 'Sofia',
-  lastName: 'Rivers',
-  email: 'sofia@devias.io',
-} satisfies User;
 
 export interface SignUpParams {
   firstName: string;
@@ -29,7 +32,7 @@ export interface SignInWithOAuthParams {
 
 export interface SignInWithPasswordParams {
   email: string;
-  password: string;
+  senha: string;
 }
 
 export interface ResetPasswordParams {
@@ -37,6 +40,8 @@ export interface ResetPasswordParams {
 }
 
 class AuthClient {
+  private baseUrl = process.env.NEXT_PUBLIC_AUTH_SERVER_URL;
+
   async signUp(_: SignUpParams): Promise<{ error?: string }> {
     // Make API request
 
@@ -52,19 +57,32 @@ class AuthClient {
   }
 
   async signInWithPassword(params: SignInWithPasswordParams): Promise<{ error?: string }> {
-    const { email, password } = params;
+    const { email, senha } = params;
 
-    // Make API request
+    try {
+      const res = await fetch(`${this.baseUrl}login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, senha }),
+      });
 
-    // We do not handle the API, so we'll check if the credentials match with the hardcoded ones.
-    if (email !== 'sofia@devias.io' || password !== 'Secret1') {
-      return { error: 'Invalid credentials' };
+      if (!res.ok) {
+        const { message } = await res.json().catch(() => ({ message: 'Erro desconhecido.' }));
+        return { error: message || 'Falha ao autenticar.' };
+      }
+
+      const response = await res.json();
+      const token = response.token?.token;
+
+      localStorage.setItem('custom-auth-token', token);
+
+      return {};
+    } catch (err) {
+      console.error('[authClient] Erro no login:', err);
+      return { error: 'Erro de conexão com o servidor.' };
     }
-
-    const token = generateToken();
-    localStorage.setItem('custom-auth-token', token);
-
-    return {};
   }
 
   async resetPassword(_: ResetPasswordParams): Promise<{ error?: string }> {
@@ -75,15 +93,62 @@ class AuthClient {
     return { error: 'Update reset not implemented' };
   }
 
-  async getUser(): Promise<{ data?: User | null; error?: string }> {
-    // Make API request
+  async updateUser(data: { novoNome?: string; novaSenha?: string }): Promise<{ error?: string }> {
+    const token = localStorage.getItem('custom-auth-token');
 
-    // We do not handle the API, so just check if we have a token in localStorage.
+    if (!token) {
+      return { error: 'Token não encontrado.' };
+    }
+
+    try {
+      const response = await fetch(`${this.baseUrl}usuarios/atualizar`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        return { error: errorData.message || 'Erro ao atualizar.' };
+      }
+
+      const { token: newToken } = await response.json();
+
+      if (newToken?.token) {
+        localStorage.setItem('custom-auth-token', newToken.token);
+      }
+
+      return {};
+    } catch (err) {
+      console.error('[authClient] Erro ao atualizar usuário:', err);
+      return { error: 'Erro de conexão com o servidor.' };
+    }
+  }
+
+  async getUser(): Promise<{ data?: User | null; error?: string }> {
     const token = localStorage.getItem('custom-auth-token');
 
     if (!token) {
       return { data: null };
     }
+
+    const payload = decodeJwt(token);
+
+    if (!payload) {
+      return { data: null, error: 'Token inválido' };
+    }
+
+    const user: User = {
+      id: `USR-${payload.id}`,
+      email: payload.email,
+      firstName: payload.nome,
+      avatar: '/assets/avatar.png',
+      isAdmin: payload.is_adm,
+      isViewer: payload.is_viewer,
+    };
 
     return { data: user };
   }
