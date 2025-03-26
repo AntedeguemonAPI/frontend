@@ -9,79 +9,147 @@ import CardHeader from '@mui/material/CardHeader';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 
-const states = [
-  { value: 'alabama', label: 'Alabama' },
-  { value: 'new-york', label: 'New York' },
-  { value: 'san-francisco', label: 'San Francisco' },
-  { value: 'los-angeles', label: 'Los Angeles' },
-] as const;
+import { authClient } from '@/lib/auth/client';
+import { useUser } from '@/hooks/use-user';
+import type { User } from '@/types/user';
 
 export function AccountDetailsForm(): React.JSX.Element {
+  const { user, refreshUser } = useUser();
+
+  const [nome, setNome] = React.useState(user?.firstName ?? '');
+  const [senha, setSenha] = React.useState('');
+  const [message, setMessage] = React.useState<string | null>(null);
+  const [messageType, setMessageType] = React.useState<'success' | 'error' | 'info'>('success');
+
+  const prevUserRef = React.useRef<User | null>(null);
+
+  // Loga quando o user no contexto for atualizado
+  React.useEffect(() => {
+    if (user && user !== prevUserRef.current) {
+      console.log('[User atualizado]', user);
+      prevUserRef.current = user;
+    }
+  }, [user]);
+
+  const handleSave = async () => {
+    const body: Record<string, string> = {};
+
+    if (nome !== user?.firstName) {
+      body.novoNome = nome;
+    }
+
+    if (senha.trim() !== '') {
+      body.novaSenha = senha;
+    }
+
+    if (Object.keys(body).length === 0) {
+      setMessage('Nenhuma alteração detectada.');
+      setMessageType('info');
+      return;
+    }
+
+    const { error } = await authClient.updateUser(body);
+
+    if (error) {
+      setMessage(`Erro ao atualizar: ${error}`);
+      setMessageType('error');
+    } else {
+      await refreshUser?.();
+      setMessage('Dados atualizados com sucesso!');
+      setMessageType('success');
+    }
+  };
+
   return (
     <form
-      onSubmit={(event) => {
-        event.preventDefault();
-      }}
-    >
+    onSubmit={(e) => {
+      e.preventDefault();
+      handleSave();
+    }}
+  >
+    <Stack spacing={2}>
+      {message && (
+        <Alert severity={messageType} sx={{ mb: 2 }}>
+          {message}
+        </Alert>
+      )}
+  
       <Card>
-        <CardHeader subheader="The information can be edited" title="Profile" />
+        <CardHeader
+          title="Perfil"
+          subheader={
+            <Typography variant="body2" color="text.secondary">
+              Você pode editar seu nome e senha. O e-mail não pode ser alterado.
+            </Typography>
+          }
+        />
         <Divider />
         <CardContent>
           <Grid container spacing={3}>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>First name</InputLabel>
-                <OutlinedInput defaultValue="Sofia" label="First name" name="firstName" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Last name</InputLabel>
-                <OutlinedInput defaultValue="Rivers" label="Last name" name="lastName" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth required>
-                <InputLabel>Email address</InputLabel>
-                <OutlinedInput defaultValue="sofia@devias.io" label="Email address" name="email" />
-              </FormControl>
-            </Grid>
-            <Grid md={6} xs={12}>
+            <Grid xs={12} md={6}>
               <FormControl fullWidth>
-                <InputLabel>Phone number</InputLabel>
-                <OutlinedInput label="Phone number" name="phone" type="tel" />
+                <InputLabel>Nome</InputLabel>
+                <OutlinedInput
+                  label="Nome"
+                  name="firstName"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                />
               </FormControl>
             </Grid>
-            <Grid md={6} xs={12}>
+  
+            <Grid xs={12} md={6}>
               <FormControl fullWidth>
-                <InputLabel>State</InputLabel>
-                <Select defaultValue="New York" label="State" name="state" variant="outlined">
-                  {states.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
+                <InputLabel>Permissão</InputLabel>
+                <OutlinedInput
+                  value={user?.isAdmin ? 'Administrador' : 'Usuário comum'}
+                  label="Permissão"
+                  disabled
+                />
               </FormControl>
             </Grid>
-            <Grid md={6} xs={12}>
+  
+            <Grid xs={12}>
               <FormControl fullWidth>
-                <InputLabel>City</InputLabel>
-                <OutlinedInput label="City" />
+                <InputLabel>Email</InputLabel>
+                <OutlinedInput
+                  value={user?.email ?? ''}
+                  label="Email"
+                  disabled
+                  sx={{ color: 'text.disabled' }}
+                />
+              </FormControl>
+            </Grid>
+  
+            <Grid xs={12}>
+              <FormControl fullWidth>
+                <InputLabel>Nova senha</InputLabel>
+                <OutlinedInput
+                  type="password"
+                  label="Nova senha"
+                  name="password"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                />
               </FormControl>
             </Grid>
           </Grid>
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained">Save details</Button>
+          <Button variant="contained" type="submit">
+            Salvar alterações
+          </Button>
         </CardActions>
       </Card>
-    </form>
+    </Stack>
+  </form>
+  
   );
 }
