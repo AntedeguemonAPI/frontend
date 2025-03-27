@@ -5,7 +5,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { useUser } from '@/hooks/use-user';
 import { Budget } from '@/components/dashboard/overview/budget';
-import { Sales } from '@/components/dashboard/overview/sales';
+import { WordChart } from '@/components/dashboard/overview/word-chart';
 import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
 import { TotalCustomers } from '@/components/dashboard/overview/total-customers';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
@@ -33,19 +33,14 @@ export default function Page(): React.JSX.Element {
         <TotalProfit sx={{ height: '100%' }} value="$15k" />
       </Grid>
       <Grid lg={8} xs={12}>
-        <Sales
-          chartSeries={[
-            { name: 'This year', data: [18, 16, 5, 8, 3, 14, 14, 16, 17, 19, 18, 20] },
-            { name: 'Last year', data: [12, 11, 4, 6, 2, 9, 9, 10, 11, 12, 13, 13] },
-          ]}
+        <WordChart
+          chartSeries={[{ name: 'Frequência', data: [120, 95, 80, 75, 70, 65, 60, 55, 50, 45] }]}
           sx={{ height: '100%' }}
         />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
         <Traffic chartSeries={[63, 15, 22]} labels={['Desktop', 'Tablet', 'Phone']} sx={{ height: '100%' }} />
       </Grid>
-      
-      
     </Grid>
   );
 }
