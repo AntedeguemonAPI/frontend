@@ -9,27 +9,28 @@ import { useTheme } from '@mui/material/styles';
 import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import type { Icon } from '@phosphor-icons/react/dist/lib/types';
-import { Desktop as DesktopIcon } from '@phosphor-icons/react/dist/ssr/Desktop';
-import { DeviceTablet as DeviceTabletIcon } from '@phosphor-icons/react/dist/ssr/DeviceTablet';
-import { Phone as PhoneIcon } from '@phosphor-icons/react/dist/ssr/Phone';
+import { Smiley as PositiveIcon } from '@phosphor-icons/react/dist/ssr/Smiley';
+import { SmileySad  as NegativeIcon } from '@phosphor-icons/react/dist/ssr/SmileySad';
+import { SmileyMeh as NeutralIcon } from '@phosphor-icons/react/dist/ssr/SmileyMeh';
 import type { ApexOptions } from 'apexcharts';
 
 import { Chart } from '@/components/core/chart';
 
-const iconMapping = { Desktop: DesktopIcon, Tablet: DeviceTabletIcon, Phone: PhoneIcon } as Record<string, Icon>;
+// Mapeamento de ícones para os sentimentos
+const iconMapping = { Positivo: PositiveIcon, Negativo: NegativeIcon, Neutro: NeutralIcon } as Record<string, Icon>;
 
-export interface TrafficProps {
+export interface SentimentalChartProps {
   chartSeries: number[];
   labels: string[];
   sx?: SxProps;
 }
 
-export function Traffic({ chartSeries, labels, sx }: TrafficProps): React.JSX.Element {
+export function SentimentalChart({ chartSeries, labels, sx }: SentimentalChartProps): React.JSX.Element {
   const chartOptions = useChartOptions(labels);
 
   return (
     <Card sx={sx}>
-      <CardHeader title="Traffic source" />
+      <CardHeader title="Sentimentos dos Usuários (PLN)" />
       <CardContent>
         <Stack spacing={2}>
           <Chart height={300} options={chartOptions} series={chartSeries} type="donut" width="100%" />
@@ -60,7 +61,7 @@ function useChartOptions(labels: string[]): ApexOptions {
 
   return {
     chart: { background: 'transparent' },
-    colors: [theme.palette.primary.main, theme.palette.success.main, theme.palette.warning.main],
+    colors: [theme.palette.success.main, theme.palette.error.main, theme.palette.warning.main],
     dataLabels: { enabled: false },
     labels,
     legend: { show: false },
