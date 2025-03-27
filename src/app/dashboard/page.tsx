@@ -6,7 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import { useUser } from '@/hooks/use-user';
 import { Tickets } from '@/components/dashboard/overview/tickets';
 import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
-import { TotalCustomers } from '@/components/dashboard/overview/total-customers';
+import { TotalCustomers, TotalTickets } from '@/components/dashboard/overview/total-tickets';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
 import { SentimentalChart } from '@/components/dashboard/overview/sentimental-chart';
 import { WordChart } from '@/components/dashboard/overview/word-chart';
@@ -24,7 +24,7 @@ export default function Page(): React.JSX.Element {
         <Tickets diff={8} trend="up" sx={{ height: '100%' }} value="320" />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="1.6k" />
+      <TotalTickets open={45} closed={275} sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
         <TasksProgress sx={{ height: '100%' }} value={75.5} />
