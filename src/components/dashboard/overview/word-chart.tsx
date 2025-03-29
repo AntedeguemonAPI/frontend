@@ -15,12 +15,12 @@ import type { ApexOptions } from 'apexcharts';
 
 import { Chart } from '@/components/core/chart';
 
-export interface SalesProps {
+export interface WordChartProps {
   chartSeries: { name: string; data: number[] }[];
   sx?: SxProps;
 }
 
-export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
+export function WordChart({ chartSeries, sx }: WordChartProps): React.JSX.Element {
   const chartOptions = useChartOptions();
 
   return (
@@ -28,10 +28,10 @@ export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
       <CardHeader
         action={
           <Button color="inherit" size="small" startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}>
-            Sync
+            Atualizar
           </Button>
         }
-        title="Sales"
+        title="Top 10 Palavras Mais Frequentes (60 dias)"
       />
       <CardContent>
         <Chart height={350} options={chartOptions} series={chartSeries} type="bar" width="100%" />
@@ -39,7 +39,7 @@ export function Sales({ chartSeries, sx }: SalesProps): React.JSX.Element {
       <Divider />
       <CardActions sx={{ justifyContent: 'flex-end' }}>
         <Button color="inherit" endIcon={<ArrowRightIcon fontSize="var(--icon-fontSize-md)" />} size="small">
-          Overview
+          Ver Detalhes
         </Button>
       </CardActions>
     </Card>
@@ -67,12 +67,15 @@ function useChartOptions(): ApexOptions {
     xaxis: {
       axisBorder: { color: theme.palette.divider, show: true },
       axisTicks: { color: theme.palette.divider, show: true },
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      categories: [
+        'Erro', 'Senha', 'Acesso', 'Sistema', 'Atualizar',
+        'Conexão', 'Usuário', 'Rede', 'Login', 'Suporte',
+      ],
       labels: { offsetY: 5, style: { colors: theme.palette.text.secondary } },
     },
     yaxis: {
       labels: {
-        formatter: (value) => (value > 0 ? `${value}K` : `${value}`),
+        formatter: (value) => `${value}`,
         offsetX: -10,
         style: { colors: theme.palette.text.secondary },
       },

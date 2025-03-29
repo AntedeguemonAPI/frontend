@@ -17,6 +17,7 @@ import { useUser } from '@/hooks/use-user';
 
 import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
+import { Searchbar } from '../searchbar/searchbar';
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
@@ -43,19 +44,7 @@ export function MainNav(): React.JSX.Element {
           sx={{ alignItems: 'center', justifyContent: 'space-between', minHeight: '64px', px: 2 }}
         >
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <IconButton
-              onClick={(): void => {
-                setOpenNav(true);
-              }}
-              sx={{ display: { lg: 'none' } }}
-            >
-              <ListIcon />
-            </IconButton>
-            <Tooltip title="Pesquisar">
-              <IconButton>
-                <MagnifyingGlassIcon />
-              </IconButton>
-            </Tooltip>
+            <Searchbar />
           </Stack>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
 {/*             <Tooltip title="Contatos">
