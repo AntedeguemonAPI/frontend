@@ -64,7 +64,7 @@ export function SideNav(): React.JSX.Element {
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
         {renderNavItems({ pathname, items: filteredItems })}
-      </Box>
+      </Box>      
     </Box>
   );
 }
@@ -87,9 +87,74 @@ interface NavItemProps extends Omit<NavItemConfig, 'items'> {
   pathname: string;
 }
 
-function NavItem({ disabled, external, href, icon, matcher, pathname, title }: NavItemProps): React.JSX.Element {
+function NavItem({ disabled, external, href, icon, matcher, pathname, title, isButton }: NavItemProps): React.JSX.Element {
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === 'text/csv') {
+      alert(`Arquivo "${file.name}" importado com sucesso!`);
+    } else {
+      alert('Por favor, selecione um arquivo CSV válido.');
+    }
+  };
+
+  const handleButtonClick = () => {
+    const fileInput = document.getElementById('file-input') as HTMLInputElement;
+    fileInput?.click();
+  };
+
+  if (isButton) {
+    return (
+      <>
+        <input
+          id="file-input"
+          type="file"
+          accept=".csv"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+        <li>
+          <Box
+            role="button"
+            onClick={handleButtonClick}
+            sx={{
+              alignItems: 'center',
+              borderRadius: 1,
+              color: 'var(--NavItem-color)',
+              cursor: 'pointer',
+              display: 'flex',
+              flex: '0 0 auto',
+              gap: 1,
+              p: '6px 16px',
+              position: 'relative',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              '&:hover': { bgcolor: 'var(--NavItem-hover-background)' },
+            }}
+          >
+            <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', flex: '0 0 auto' }}>
+              {Icon ? (
+                <Icon
+                  fill="var(--NavItem-icon-color)"
+                  fontSize="var(--icon-fontSize-md)"
+                />
+              ) : null}
+            </Box>
+            <Box sx={{ flex: '1 1 auto' }}>
+              <Typography
+                component="span"
+                sx={{ color: 'inherit', fontSize: '0.875rem', fontWeight: 500, lineHeight: '28px' }}
+              >
+                {title}
+              </Typography>
+            </Box>
+          </Box>
+        </li>
+      </>
+    );
+  }
 
   return (
     <li>
