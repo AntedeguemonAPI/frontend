@@ -13,14 +13,18 @@ import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/di
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
 import { usePopover } from '@/hooks/use-popover';
+import { useUser } from '@/hooks/use-user';
 
 import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
+import { Searchbar } from '../searchbar/searchbar';
 
 export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
-
   const userPopover = usePopover<HTMLDivElement>();
+  const { user } = useUser();
+
+  const primeiraLetra = user?.firstName?.charAt(0)?.toUpperCase() ?? '?';
 
   return (
     <React.Fragment>
@@ -40,39 +44,35 @@ export function MainNav(): React.JSX.Element {
           sx={{ alignItems: 'center', justifyContent: 'space-between', minHeight: '64px', px: 2 }}
         >
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <IconButton
-              onClick={(): void => {
-                setOpenNav(true);
-              }}
-              sx={{ display: { lg: 'none' } }}
-            >
-              <ListIcon />
-            </IconButton>
-            <Tooltip title="Search">
-              <IconButton>
-                <MagnifyingGlassIcon />
-              </IconButton>
-            </Tooltip>
+            <Searchbar />
           </Stack>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <Tooltip title="Contacts">
+{/*             <Tooltip title="Contatos">
               <IconButton>
                 <UsersIcon />
               </IconButton>
-            </Tooltip>
-            <Tooltip title="Notifications">
+            </Tooltip> */}
+            <Tooltip title="Notificações">
               <Badge badgeContent={4} color="success" variant="dot">
                 <IconButton>
                   <BellIcon />
                 </IconButton>
               </Badge>
             </Tooltip>
-            <Avatar
-              onClick={userPopover.handleOpen}
-              ref={userPopover.anchorRef}
-              src="/assets/avatar.png"
-              sx={{ cursor: 'pointer' }}
-            />
+            <Tooltip title="Perfil">
+              <Avatar
+                onClick={userPopover.handleOpen}
+                ref={userPopover.anchorRef}
+                sx={{
+                  cursor: 'pointer',
+                  bgcolor: 'primary.main',
+                  color: 'white',
+                  fontWeight: 600,
+                }}
+              >
+                {primeiraLetra}
+              </Avatar>
+            </Tooltip>
           </Stack>
         </Stack>
       </Box>

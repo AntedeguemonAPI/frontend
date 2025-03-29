@@ -15,7 +15,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps): React.JSX.Element {
   return (
-    <html lang="en">
+    <html lang="pt">
       <body>
         <LocalizationProvider>
           <UserProvider>
