@@ -91,14 +91,32 @@ function NavItem({ disabled, external, href, icon, matcher, pathname, title, isB
   const active = isNavItemActive({ disabled, external, href, matcher, pathname });
   const Icon = icon ? navIcons[icon] : null;
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && file.type === 'text/csv') {
-      alert(`Arquivo "${file.name}" importado com sucesso!`);
-    } else {
+    if (!file || file.type !== 'text/csv') {
       alert('Por favor, selecione um arquivo CSV válido.');
+      return;
     }
-  };
+  
+    const formData = new FormData();
+    formData.append('file', file);
+  
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_PREPROCESSING_SERVER_URL}files/upload_csv/`, {
+        method: 'POST',
+        body: formData,
+      });
+  
+      if (response.status === 200) {
+        alert(`Arquivo "${file.name}" importado com sucesso!`);
+      } else {
+        alert('Erro ao importar o CSV. Verifique o arquivo e tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar CSV:', error);
+      alert('Erro de conexão ao importar o CSV.');
+    }
+  };  
 
   const handleButtonClick = () => {
     const fileInput = document.getElementById('file-input') as HTMLInputElement;
