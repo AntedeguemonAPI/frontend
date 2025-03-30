@@ -2,32 +2,67 @@
 
 import * as React from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
-import dayjs from 'dayjs';
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import { useUser } from '@/hooks/use-user';
-import { Budget } from '@/components/dashboard/overview/budget';
-import { LatestOrders } from '@/components/dashboard/overview/latest-orders';
-import { LatestProducts } from '@/components/dashboard/overview/latest-products';
-import { Sales } from '@/components/dashboard/overview/sales';
+import { Tickets } from '@/components/dashboard/overview/tickets';
 import { TasksProgress } from '@/components/dashboard/overview/tasks-progress';
-import { TotalCustomers } from '@/components/dashboard/overview/total-customers';
+import { TotalCustomers, TotalTickets } from '@/components/dashboard/overview/total-tickets';
 import { TotalProfit } from '@/components/dashboard/overview/total-profit';
-import { Traffic } from '@/components/dashboard/overview/traffic';
+import { SentimentalChart } from '@/components/dashboard/overview/sentimental-chart';
+import { WordChart } from '@/components/dashboard/overview/word-chart';
+
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 600,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+  maxHeight: '80vh',
+  overflowY: 'auto',
+  borderRadius: 2,
+};
 
 export default function Page(): React.JSX.Element {
-  const { user, isLoading, error } = useUser();
+  const { user } = useUser();
+  const [data, setData] = React.useState<any[]>([]);
+  const [selectedItem, setSelectedItem] = React.useState<any | null>(null);
+  const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+
+  const handleOpen = (item: any) => {
+    setSelectedItem(item);
+    setOpen(true);
+  };
+  const handleClose = () => setOpen(false);
 
   React.useEffect(() => {
     console.log('[DASHBOARD] Contexto do usuário:', user);
   }, [user]);
 
+  React.useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_PROCESSING_SERVER_URL}preprocessamento/`)
+      .then((res) => res.json())
+      .then((res) => setData(res))
+      .catch((err) => console.error('Erro ao buscar dados:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <Grid container spacing={3}>
       <Grid lg={3} sm={6} xs={12}>
-        <Budget diff={12} trend="up" sx={{ height: '100%' }} value="$24k" />
+        <Tickets diff={8} trend="up" sx={{ height: '100%' }} value="320" />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
-        <TotalCustomers diff={16} trend="down" sx={{ height: '100%' }} value="1.6k" />
+        <TotalTickets open={45} closed={275} sx={{ height: '100%' }} />
       </Grid>
       <Grid lg={3} sm={6} xs={12}>
         <TasksProgress sx={{ height: '100%' }} value={75.5} />
@@ -36,103 +71,52 @@ export default function Page(): React.JSX.Element {
         <TotalProfit sx={{ height: '100%' }} value="$15k" />
       </Grid>
       <Grid lg={8} xs={12}>
-        <Sales
-          chartSeries={[
-            { name: 'This year', data: [18, 16, 5, 8, 3, 14, 14, 16, 17, 19, 18, 20] },
-            { name: 'Last year', data: [12, 11, 4, 6, 2, 9, 9, 10, 11, 12, 13, 13] },
-          ]}
+        <WordChart
+          chartSeries={[{ name: 'Frequência', data: [120, 95, 80, 75, 70, 65, 60, 55, 50, 45] }]}
           sx={{ height: '100%' }}
         />
       </Grid>
       <Grid lg={4} md={6} xs={12}>
-        <Traffic chartSeries={[63, 15, 22]} labels={['Desktop', 'Tablet', 'Phone']} sx={{ height: '100%' }} />
-      </Grid>
-      <Grid lg={4} md={6} xs={12}>
-        <LatestProducts
-          products={[
-            {
-              id: 'PRD-005',
-              name: 'Soja & Co. Eucalyptus',
-              image: '/assets/product-5.png',
-              updatedAt: dayjs().subtract(18, 'minutes').subtract(5, 'hour').toDate(),
-            },
-            {
-              id: 'PRD-004',
-              name: 'Necessaire Body Lotion',
-              image: '/assets/product-4.png',
-              updatedAt: dayjs().subtract(41, 'minutes').subtract(3, 'hour').toDate(),
-            },
-            {
-              id: 'PRD-003',
-              name: 'Ritual of Sakura',
-              image: '/assets/product-3.png',
-              updatedAt: dayjs().subtract(5, 'minutes').subtract(3, 'hour').toDate(),
-            },
-            {
-              id: 'PRD-002',
-              name: 'Lancome Rouge',
-              image: '/assets/product-2.png',
-              updatedAt: dayjs().subtract(23, 'minutes').subtract(2, 'hour').toDate(),
-            },
-            {
-              id: 'PRD-001',
-              name: 'Erbology Aloe Vera',
-              image: '/assets/product-1.png',
-              updatedAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-          ]}
+        <SentimentalChart
+          chartSeries={[50, 30, 20]}
+          labels={['Positivo', 'Negativo', 'Neutro']}
           sx={{ height: '100%' }}
         />
       </Grid>
-      <Grid lg={8} md={12} xs={12}>
-        <LatestOrders
-          orders={[
-            {
-              id: 'ORD-007',
-              customer: { name: 'Ekaterina Tankova' },
-              amount: 30.5,
-              status: 'pending',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-006',
-              customer: { name: 'Cao Yu' },
-              amount: 25.1,
-              status: 'delivered',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-004',
-              customer: { name: 'Alexa Richardson' },
-              amount: 10.99,
-              status: 'refunded',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-003',
-              customer: { name: 'Anje Keizer' },
-              amount: 96.43,
-              status: 'pending',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-002',
-              customer: { name: 'Clarke Gillebert' },
-              amount: 32.54,
-              status: 'delivered',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-            {
-              id: 'ORD-001',
-              customer: { name: 'Adam Denisov' },
-              amount: 16.76,
-              status: 'delivered',
-              createdAt: dayjs().subtract(10, 'minutes').toDate(),
-            },
-          ]}
-          sx={{ height: '100%' }}
-        />
-      </Grid>
+
+      {/* Cards adicionais com status de processamento */}
+      {loading ? (
+        <Grid xs={12} sx={{ textAlign: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Grid>
+      ) : (
+        data.map((item) => (
+          <Grid key={item.id} xs={12} sm={6} md={4}>
+            <Paper elevation={3} sx={{ p: 2, height: '100%' }}>
+              <Typography variant="h6" gutterBottom>
+                ID: {item.id}
+              </Typography>
+              <Typography>Status: {item.preprocessamento_concluido ? 'Concluído' : 'Pré-processando'}</Typography>
+              {item.preprocessamento_concluido === 1 && (
+                <Button sx={{ mt: 2 }} variant="contained" fullWidth onClick={() => handleOpen(item)}>
+                  Ver Detalhes
+                </Button>
+              )}
+            </Paper>
+          </Grid>
+        ))
+      )}
+
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={modalStyle}>
+          <Typography variant="h6" gutterBottom>
+            Detalhes do Pré-processamento
+          </Typography>
+          <pre style={{ fontSize: 14, whiteSpace: 'pre-wrap' }}>
+            {JSON.stringify(selectedItem, null, 2)}
+          </pre>
+        </Box>
+      </Modal>
     </Grid>
   );
 }
