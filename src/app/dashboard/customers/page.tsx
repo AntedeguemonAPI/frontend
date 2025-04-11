@@ -50,7 +50,17 @@ export default function Page(): React.JSX.Element {
     fetchUsuarios();
   }, []);
 
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleSubmit = async () => {
+    if (!isValidEmail(email)) {
+      setSnackbar({ open: true, message: 'E-mail inválido. Por favor, insira um e-mail válido.', severity: 'error' });
+      return;
+    }
+    
     const token = localStorage.getItem('custom-auth-token');
     try {
       const response = await fetch(`${baseUrl}/usuarios`, {
