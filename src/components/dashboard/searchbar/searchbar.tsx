@@ -6,16 +6,11 @@ import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/di
 export function Searchbar(): React.JSX.Element {
   return (
     
-      <OutlinedInput
-        defaultValue=""
-        fullWidth
-        placeholder="Busca semântica"
-        startAdornment={
-          <InputAdornment position="start">
-            <MagnifyingGlassIcon fontSize="var(--icon-fontSize-md)" />
-          </InputAdornment>
-        }
-        sx={{ maxWidth: '500px'}}
-      />
+    <OutlinedInput
+    defaultValue=""
+    fullWidth
+    placeholder="Busca semântica"
+    sx={{ maxWidth: '800px' }}
+  />
   );
 }
