@@ -4,7 +4,10 @@ import * as React from 'react';
 import {
   Button, Stack, Typography, Dialog, DialogTitle, DialogContent,
   DialogActions, TextField, FormControlLabel, Checkbox, Snackbar, Alert,
-  Avatar, IconButton, Chip, Paper, TableContainer, TablePagination
+  Avatar, IconButton, Chip, Paper, TableContainer, TablePagination,
+  FormLabel,
+  RadioGroup,
+  Radio
 } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -60,7 +63,7 @@ export default function Page(): React.JSX.Element {
       setSnackbar({ open: true, message: 'E-mail inválido. Por favor, insira um e-mail válido.', severity: 'error' });
       return;
     }
-    
+
     const token = localStorage.getItem('custom-auth-token');
     try {
       const response = await fetch(`${baseUrl}/usuarios`, {
@@ -204,8 +207,18 @@ export default function Page(): React.JSX.Element {
             <TextField label="Nome" fullWidth value={nome} onChange={e => setNome(e.target.value)} />
             <TextField label="Email" fullWidth value={email} onChange={e => setEmail(e.target.value)} />
             <TextField label="Senha" type="password" fullWidth value={senha} onChange={e => setSenha(e.target.value)} />
-            <FormControlLabel control={<Checkbox checked={isAdm} onChange={e => setIsAdm(e.target.checked)} />} label="Administrador" />
-            <FormControlLabel control={<Checkbox checked={isViewer} onChange={e => setIsViewer(e.target.checked)} />} label="Visualizador" />
+            <FormLabel component="legend">Tipo de Usuário</FormLabel>
+            <RadioGroup
+              value={isAdm ? 'admin' : 'viewer'}
+              onChange={e => {
+                const value = e.target.value;
+                setIsAdm(value === 'admin');
+                setIsViewer(value === 'viewer');
+              }}
+            >
+              <FormControlLabel value="admin" control={<Radio />} label="Administrador" />
+              <FormControlLabel value="viewer" control={<Radio />} label="Visualizador" />
+            </RadioGroup>
           </Stack>
         </DialogContent>
         <DialogActions>
