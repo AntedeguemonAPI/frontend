@@ -43,15 +43,22 @@ export function MainNav(): React.JSX.Element {
           spacing={2}
           sx={{ alignItems: 'center', justifyContent: 'space-between', minHeight: '64px', px: 2 }}
         >
-          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+          <Stack
+            sx={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '150%',
+
+            }}
+            direction="row"
+            spacing={1}
+          >
             <Searchbar />
+            <IconButton>
+              <MagnifyingGlassIcon />
+            </IconButton>
           </Stack>
-          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-{/*             <Tooltip title="Contatos">
-              <IconButton>
-                <UsersIcon />
-              </IconButton>
-            </Tooltip> */}
+          <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>            
             <Tooltip title="Notificações">
               <Badge badgeContent={4} color="success" variant="dot">
                 <IconButton>
