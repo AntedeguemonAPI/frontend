@@ -6,6 +6,7 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { XSquare } from '@phosphor-icons/react/dist/ssr/XSquare';
 import { FileArrowUp as FileArrowUpIcon } from '@phosphor-icons/react/dist/ssr/FileArrowUp';
+import { Database as DatabaseIcon } from '@phosphor-icons/react/dist/ssr/Database';
 
 export const navIcons = {
   'chart-pie': ChartPieIcon,
@@ -13,6 +14,7 @@ export const navIcons = {
   'plugs-connected': PlugsConnectedIcon,
   'x-square': XSquare,
   'file-arrow-up': FileArrowUpIcon,
+'database': DatabaseIcon,
   user: UserIcon,
   users: UsersIcon,
 } as Record<string, Icon>;
