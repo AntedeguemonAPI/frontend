@@ -18,7 +18,7 @@ export function Searchbar(): React.JSX.Element {
   return (
     <OutlinedInput
       value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
+      onChange={(e) => { setSearchQuery(e.target.value); }}
       fullWidth
       placeholder="Busca semântica"
       sx={{ maxWidth: '900px' }}
