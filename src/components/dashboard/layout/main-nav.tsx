@@ -84,9 +84,6 @@ export function MainNav(): React.JSX.Element {
             sx={{ alignItems: 'center', justifyContent: 'center', width: '150%' }}
           >
             <Searchbar />
-            <IconButton>
-              <MagnifyingGlassIcon />
-            </IconButton>
           </Stack>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
             <Tooltip title="Notificações">

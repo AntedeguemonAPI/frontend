@@ -8,6 +8,7 @@ export const paths = {
     integrations: '/dashboard/integrations',
     processes: '/dashboard/processes',
     settings: '/dashboard/settings',
+    semantic_search: '/dashboard/semantic_search',
   },
   errors: { notFound: '/errors/not-found' },
 } as const;
