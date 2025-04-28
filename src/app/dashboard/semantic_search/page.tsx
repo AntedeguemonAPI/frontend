@@ -4,60 +4,46 @@ import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 
+interface SearchResult {
+  descricao: string;
+  resposta_sugerida: string;
+  tempo_resposta_horas: string | number;
+  score: number;
+}
+
 export default function Page(): React.JSX.Element {
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || '';
-  const [results, setResults] = React.useState<{ date: string; description: string }[]>([]);
+  const [results, setResults] = React.useState<SearchResult[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
 
-  // Simula o conteúdo de um arquivo CSV com conversas do helpdesk
-  const mockConversations = [
-    'Estou com problemas na conexão com a internet.',
-    'Minha internet está muito lenta.',
-    'Não consigo acessar a internet.',
-    'A conexão cai frequentemente.',
-    'A internet não está funcionando.',
-    'Problemas de conexão com o Wi-Fi.',
-    'Minha internet está instável.',
-    'Não consigo conectar ao roteador.',
-    'A velocidade da internet está muito baixa.',
-    'A conexão com a internet foi interrompida.',
-    'Estou enfrentando dificuldades para acessar sites.',
-    'A internet está desconectando sozinha.',
-    'Não consigo assistir vídeos por causa da internet.',
-    'A conexão está muito ruim hoje.',
-    'Minha internet parou de funcionar de repente.',
-  ];
+  const searchUrl = process.env.NEXT_PUBLIC_SEMANTIC_SEARCH_URL;
 
   React.useEffect(() => {
-    if (query) {
+    if (query && searchUrl) {
       setLoading(true);
 
-      // Simula a busca semântica
-      setTimeout(() => {
-        const filteredResults = mockConversations
-          .filter((conversation) => {
-            // Divide a query em palavras e verifica se pelo menos uma está presente na frase
-            const queryWords = query.toLowerCase().split(' ');
-            return queryWords.some((word) => conversation.toLowerCase().includes(word));
-          })
-          .slice(0, 10) // Limita a 10 resultados
-          .map((description) => ({
-            date: new Date().toLocaleDateString(),
-            description,
-          }));
-
-        setResults(filteredResults);
-        setLoading(false);
-      }, 2000); // Simula um atraso de 1 segundo
+      fetch(`${searchUrl}?query=${encodeURIComponent(query)}&top_k=10`)
+        .then((res) => res.json())
+        .then((data) => {
+          setResults(data.resultados || []);
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar resultados:', error);
+          setResults([]);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
-  }, [query]);
+  }, [query, searchUrl]);
 
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
         Resultados para: "{query}"
       </Typography>
+
       {loading ? (
         <Stack alignItems="center" justifyContent="center" sx={{ mt: 5 }}>
           <CircularProgress />
@@ -66,10 +52,23 @@ export default function Page(): React.JSX.Element {
         <Stack spacing={2}>
           {results.map((result, index) => (
             <Box key={index} sx={{ p: 2, border: '1px solid #ddd', borderRadius: 2 }}>
-              <Typography variant="body2" color="textSecondary">
-                Data: {result.date}
+              <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                Similaridade: {(result.score * 100).toFixed(2)}%
               </Typography>
-              <Typography variant="h6">{result.description}</Typography>
+
+              <Typography variant="h6" gutterBottom>
+                {result.descricao}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Resposta sugerida:</strong> {result.resposta_sugerida || "Nenhuma resposta disponível."}
+              </Typography>
+
+              <Typography variant="body2" color="textSecondary">
+                <strong>Tempo de resposta:</strong> {typeof result.tempo_resposta_horas === 'number' 
+                  ? `${result.tempo_resposta_horas.toFixed(2)} horas`
+                  : result.tempo_resposta_horas}
+              </Typography>
             </Box>
           ))}
         </Stack>

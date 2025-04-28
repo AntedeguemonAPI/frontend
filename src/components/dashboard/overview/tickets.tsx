@@ -7,7 +7,7 @@ import type { SxProps } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react/dist/ssr/ArrowDown';
 import { ArrowUp as ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp';
-import { Ticket as TicketIcon } from '@phosphor-icons/react/dist/ssr/Ticket';
+import { Clock as ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock';
 
 export interface TicketsProps {
   diff?: number;
@@ -27,15 +27,15 @@ export function Tickets({ diff, trend, sx, value }: TicketsProps): React.JSX.Ele
           <Stack direction="row" sx={{ alignItems: 'flex-start', justifyContent: 'space-between' }} spacing={3}>
             <Stack spacing={1}>
               <Typography color="text.secondary" variant="overline">
-                Chamados Recebidos
+                Tempo médio de resolução
               </Typography>
               <Typography variant="h4">{value}</Typography>
             </Stack>
             <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
-              <TicketIcon fontSize="var(--icon-fontSize-lg)" />
+              <ClockIcon fontSize="var(--icon-fontSize-lg)" />
             </Avatar>
           </Stack>
-          {diff ? (
+{/*           {diff ? (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
               <Stack sx={{ alignItems: 'center' }} direction="row" spacing={0.5}>
                 <TrendIcon color={trendColor} fontSize="var(--icon-fontSize-md)" />
@@ -47,7 +47,7 @@ export function Tickets({ diff, trend, sx, value }: TicketsProps): React.JSX.Ele
                 Desde o último mês
               </Typography>
             </Stack>
-          ) : null}
+          ) : null} */}
         </Stack>
       </CardContent>
     </Card>
