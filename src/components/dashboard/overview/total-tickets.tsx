@@ -22,25 +22,22 @@ export function TotalSla({ slaMet, slaNotMet, sx }: TotalSlaProps): React.JSX.El
           <Typography color="text.secondary" variant="overline">
             SLA Cumprido/Não Cumprido
           </Typography>
-          <Stack direction="row" spacing={3} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-            <Stack spacing={1} sx={{ alignItems: 'center' }}>
-              <Avatar sx={{ backgroundColor: 'var(--mui-palette-success-main)', height: '56px', width: '56px' }}>
-                <CheckIcon fontSize="var(--icon-fontSize-lg)" />
-              </Avatar>
-              <Typography variant="h5">{slaMet}</Typography>
-              <Typography color="text.secondary" variant="caption">
-                Cumprido
-              </Typography>
-            </Stack>
-            <Stack spacing={1} sx={{ alignItems: 'center' }}>
-              <Avatar sx={{ backgroundColor: 'var(--mui-palette-error-main)', height: '56px', width: '56px' }}>
-                <WarningIcon fontSize="var(--icon-fontSize-lg)" />
-              </Avatar>
-              <Typography variant="h5">{slaNotMet}</Typography>
-              <Typography color="text.secondary" variant="caption">
-                Não Cumprido
-              </Typography>
-            </Stack>
+          <Stack direction="row" spacing={3} sx={{ alignItems: 'center', justifyContent: 'space-around' }}>
+            <Stack spacing={0.5} sx={{ alignItems: 'center' }}>
+          <Avatar sx={{ backgroundColor: 'var(--mui-palette-success-main)', height: '72px', width: '72px' }}>
+            <CheckIcon fontSize="48px" />
+          </Avatar>
+          <Typography variant="h5">{slaMet}</Typography>
+          <Typography color="text.secondary" variant="caption">Cumprido</Typography>
+        </Stack>
+
+        <Stack spacing={0.5} sx={{ alignItems: 'center' }}>
+          <Avatar sx={{ backgroundColor: 'var(--mui-palette-error-main)', height: '72px', width: '72px' }}>
+            <WarningIcon fontSize="48px" />
+          </Avatar>
+          <Typography variant="h5">{slaNotMet}</Typography>
+          <Typography color="text.secondary" variant="caption">Não Cumprido</Typography>
+        </Stack>
           </Stack>
         </Stack>
       </CardContent>

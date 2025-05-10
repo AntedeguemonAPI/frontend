@@ -64,11 +64,11 @@ export default function Page(): React.JSX.Element {
                 <strong>Resposta sugerida:</strong> {result.resposta_sugerida || "Nenhuma resposta disponível."}
               </Typography>
 
-              <Typography variant="body2" color="textSecondary">
+{/*               <Typography variant="body2" color="textSecondary">
                 <strong>Tempo de resposta:</strong> {typeof result.tempo_resposta_horas === 'number' 
                   ? `${result.tempo_resposta_horas.toFixed(2)} horas`
                   : result.tempo_resposta_horas}
-              </Typography>
+              </Typography> */}
             </Box>
           ))}
         </Stack>
