@@ -5,10 +5,14 @@ import { useSearchParams } from 'next/navigation';
 import { Box, CircularProgress, Stack, Typography } from '@mui/material';
 
 interface SearchResult {
-  descricao: string;
-  resposta_sugerida: string;
-  tempo_resposta_horas: string | number;
   score: number;
+  id_chamado: string;
+  data_abertura: string;
+  data_fechamento?: string | null;
+  descricao: string;
+  resposta_sugerida?: string | null;
+  tag_assunto: string;
+  tempo_resposta_horas: string | number;
 }
 
 export default function Page(): React.JSX.Element {
@@ -23,7 +27,7 @@ export default function Page(): React.JSX.Element {
     if (query && searchUrl) {
       setLoading(true);
 
-      fetch(`${searchUrl}?query=${encodeURIComponent(query)}&top_k=10`)
+      fetch(`${searchUrl}?query=${encodeURIComponent(query)}&top_k=100`)
         .then((res) => res.json())
         .then((data) => {
           setResults(data.resultados || []);
@@ -41,7 +45,7 @@ export default function Page(): React.JSX.Element {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Resultados para: "{query}"
+        {loading ? `Buscando resultados para: "${query}"` : `${results.length} resultados encontrados para: "${query}"`}
       </Typography>
 
       {loading ? (
