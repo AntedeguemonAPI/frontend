@@ -34,6 +34,56 @@ const formatDateSafely = (dateString: string | null | undefined): string => {
   return date.toLocaleDateString();
 };
 
+// Função para formatar o tempo de resposta (VERSÃO ATUALIZADA)
+const formatResponseTime = (totalHours: number | string | null | undefined): string => {
+  if (typeof totalHours === 'string') {
+    const numericValue = parseFloat(totalHours);
+    if (isNaN(numericValue)) {
+      return totalHours;
+    }
+    totalHours = numericValue;
+  }
+
+  if (typeof totalHours !== 'number' || isNaN(totalHours) || totalHours < 0) {
+    return 'N/A';
+  }
+
+  if (totalHours === 0) return '0h';
+  if (totalHours > 0 && totalHours < 1) return '<1h';
+
+  let h_calc = Math.floor(totalHours);
+
+  const hoursInDay = 24;
+  const daysInMonth = 30;
+
+  const months = Math.floor(h_calc / (hoursInDay * daysInMonth));
+  h_calc %= hoursInDay * daysInMonth;
+
+  const days = Math.floor(h_calc / hoursInDay);
+  h_calc %= hoursInDay;
+
+  const hours = h_calc;
+
+  const parts: string[] = [];
+
+  if (months > 0) {
+    parts.push(`${months} ${months === 1 ? 'mês' : 'meses'}`);
+  }
+  if (days > 0) {
+    parts.push(`${days} ${days === 1 ? 'dia' : 'dias'}`);
+  }
+
+  if ((hours > 0 && (months > 0 || days > 0)) || (months === 0 && days === 0)) {
+    parts.push(`${hours}h`);
+  }
+
+  if (parts.length === 0) {
+    return `${Math.floor(totalHours)}h`;
+  }
+
+  return parts.join(' ');
+};
+
 export default function Page(): React.JSX.Element {
   const searchParams = useSearchParams();
   const query = searchParams.get('query') || '';
@@ -115,7 +165,8 @@ export default function Page(): React.JSX.Element {
                   {result.descricao}
                 </Typography>
 
-                {result.resposta_sugerida ? <Paper
+                {result.resposta_sugerida ? (
+                  <Paper
                     variant="outlined"
                     sx={{
                       p: 1.5,
@@ -129,18 +180,15 @@ export default function Page(): React.JSX.Element {
                     <Typography variant="body2" color="text.primary">
                       {result.resposta_sugerida}
                     </Typography>
-                  </Paper> : null}
+                  </Paper>
+                ) : null}
 
                 <Grid container spacing={1.5} sx={{ color: 'text.secondary' }}>
                   <Grid item xs={12} sm={6} md={3}>
-                    <Typography variant="body2">
-                      Abertura: {formatDateSafely(result.data_abertura)}
-                    </Typography>
+                    <Typography variant="body2">Abertura: {formatDateSafely(result.data_abertura)}</Typography>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
-                    <Typography variant="body2">
-                      Fechamento: {formatDateSafely(result.data_fechamento)}
-                    </Typography>
+                    <Typography variant="body2">Fechamento: {formatDateSafely(result.data_fechamento)}</Typography>
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Typography variant="body2" component="div">
@@ -149,10 +197,7 @@ export default function Page(): React.JSX.Element {
                   </Grid>
                   <Grid item xs={12} sm={6} md={3}>
                     <Typography variant="body2">
-                      Tempo Resp.:{' '}
-                      {typeof result.tempo_resposta_horas === 'number'
-                        ? `${result.tempo_resposta_horas.toFixed(1)}h`
-                        : result.tempo_resposta_horas}
+                      Tempo de Resposta: {formatResponseTime(result.tempo_resposta_horas)}
                     </Typography>
                   </Grid>
                 </Grid>
