@@ -75,7 +75,10 @@ function useChartOptions(): ApexOptions {
     },
     yaxis: {
       labels: {
-        formatter: (value) => `${value}`,
+formatter: (val: unknown): string => {
+  const num = typeof val === 'number' ? val : Number(val);
+  return isNaN(num) ? '0%' : `${num.toFixed(1)}%`;
+},
         offsetX: -10,
         style: { colors: theme.palette.text.secondary },
       },
