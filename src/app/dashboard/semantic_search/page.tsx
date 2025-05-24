@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Box, CircularProgress, Paper, Stack, TablePagination, Typography } from '@mui/material'; // Adicionado Paper e TablePagination
+import { Box, Chip, CircularProgress, Grid, Paper, Stack, TablePagination, Typography } from '@mui/material';
 
 interface SearchResult {
   score: number;
@@ -14,6 +14,25 @@ interface SearchResult {
   tag_assunto: string;
   tempo_resposta_horas: string | number;
 }
+
+// Função auxiliar para determinar a cor do Chip do Score
+const getScoreChipColor = (scoreValue: number): 'success' | 'warning' | 'default' => {
+  if (scoreValue >= 0.35) return 'success';
+  if (scoreValue >= 0.25) return 'warning';
+  return 'default';
+};
+
+// Função auxiliar para formatar data ou retornar N/A
+const formatDateSafely = (dateString: string | null | undefined): string => {
+  if (!dateString) {
+    return 'N/A';
+  }
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    return 'N/A';
+  }
+  return date.toLocaleDateString();
+};
 
 export default function Page(): React.JSX.Element {
   const searchParams = useSearchParams();
@@ -30,7 +49,6 @@ export default function Page(): React.JSX.Element {
   React.useEffect(() => {
     if (query && searchUrl) {
       setLoading(true);
-      // Resetar a página para 0 sempre que uma nova busca for feita
       setPage(0);
       fetch(`${searchUrl}?query=${encodeURIComponent(query)}&top_k=100`)
         .then((res) => res.json())
@@ -47,7 +65,6 @@ export default function Page(): React.JSX.Element {
     }
   }, [query, searchUrl]);
 
-  // Funções para manipulação da paginação
   const handleChangePage = (_event: unknown, newPage: number): void => {
     setPage(newPage);
   };
@@ -57,7 +74,6 @@ export default function Page(): React.JSX.Element {
     setPage(0);
   };
 
-  // Aplicar paginação aos resultados
   const paginatedResults = results.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
@@ -72,10 +88,10 @@ export default function Page(): React.JSX.Element {
         </Stack>
       ) : results.length > 0 ? (
         <Paper sx={{ width: '100%', overflow: 'hidden' }} elevation={0}>
-          <Stack spacing={2} sx={{ p: 2 }}>
-            {paginatedResults.map((result, index) => (
+          <Stack spacing={2.5}>
+            {paginatedResults.map((result) => (
               <Box
-                key={index}
+                key={result.id_chamado}
                 sx={{
                   p: 3,
                   border: '1px solid #ddd',
@@ -83,33 +99,63 @@ export default function Page(): React.JSX.Element {
                   width: '100%',
                 }}
               >
-                <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                  <strong>Score:</strong> {(result.score * 100).toFixed(2)}%
+                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 1.5 }}>
+                  <Typography variant="overline" color="text.secondary" sx={{ lineHeight: '1.5' }}>
+                    Chamado: {result.id_chamado}
+                  </Typography>
+                  <Chip
+                    label={`Relevância: ${(result.score * 100).toFixed(0)}%`}
+                    color={getScoreChipColor(result.score)}
+                    size="small"
+                    sx={{ fontWeight: 500 }}
+                  />
+                </Stack>
+
+                <Typography variant="subtitle1" component="h3" sx={{ mb: 1.5, fontWeight: 500 }}>
+                  {result.descricao}
                 </Typography>
-                <Typography variant="body2" gutterBottom>
-                  <strong>ID Chamado:</strong> {result.id_chamado}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  <strong>Data Abertura:</strong> {result.data_abertura}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  <strong>Data Fechamento:</strong> {result.data_fechamento || 'Não finalizado'}
-                </Typography>
-                <Typography variant="h6" gutterBottom sx={{ mt: 1, mb: 1 }}>
-                  <strong>Descrição:</strong> {result.descricao}
-                </Typography>
-                <Typography variant="body1" gutterBottom sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
-                  <strong>Resposta Sugerida:</strong> {result.resposta_sugerida || 'Nenhuma resposta disponível.'}
-                </Typography>
-                <Typography variant="body2" gutterBottom>
-                  <strong>Tag Assunto:</strong> {result.tag_assunto}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  <strong>Tempo de Resposta (horas):</strong>{' '}
-                  {typeof result.tempo_resposta_horas === 'number'
-                    ? result.tempo_resposta_horas.toFixed(2)
-                    : result.tempo_resposta_horas}
-                </Typography>
+
+                {result.resposta_sugerida ? <Paper
+                    variant="outlined"
+                    sx={{
+                      p: 1.5,
+                      mb: 2,
+                      bgcolor: (theme) => theme.palette.action.hover,
+                    }}
+                  >
+                    <Typography variant="caption" display="block" color="text.secondary" sx={{ mb: 0.5 }}>
+                      Sugestão de Resposta:
+                    </Typography>
+                    <Typography variant="body2" color="text.primary">
+                      {result.resposta_sugerida}
+                    </Typography>
+                  </Paper> : null}
+
+                <Grid container spacing={1.5} sx={{ color: 'text.secondary' }}>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Typography variant="body2">
+                      Abertura: {formatDateSafely(result.data_abertura)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Typography variant="body2">
+                      Fechamento: {formatDateSafely(result.data_fechamento)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Typography variant="body2" component="div">
+                      Assunto: <Chip label={result.tag_assunto} size="small" variant="outlined" sx={{ ml: 0.5 }} />
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12} sm={6} md={3}>
+                    <Typography variant="body2">
+                      Tempo Resp.:{' '}
+                      {typeof result.tempo_resposta_horas === 'number'
+                        ? `${result.tempo_resposta_horas.toFixed(1)}h`
+                        : result.tempo_resposta_horas}
+                    </Typography>
+                  </Grid>
+                </Grid>
               </Box>
             ))}
           </Stack>
