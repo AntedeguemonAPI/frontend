@@ -43,7 +43,7 @@ export default function Page(): React.JSX.Element {
   }, [query, searchUrl]);
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ py: 3, px: '20px' }}>
       <Typography variant="h4" gutterBottom>
         {loading ? `Buscando resultados para: "${query}"` : `${results.length} resultados encontrados para: "${query}"`}
       </Typography>
@@ -53,9 +53,9 @@ export default function Page(): React.JSX.Element {
           <CircularProgress />
         </Stack>
       ) : results.length > 0 ? (
-        <Stack spacing={2}>
+        <Stack spacing={2} sx={{ width: '100%' }}>
           {results.map((result, index) => (
-            <Box key={index} sx={{ p: 2, border: '1px solid #ddd', borderRadius: 2 }}>
+            <Box key={index} sx={{ p: 3, border: '1px solid #ddd', borderRadius: 2, width: '100%' }}>
               <Typography variant="subtitle2" color="textSecondary" gutterBottom>
                 <strong>Score:</strong> {(result.score * 100).toFixed(2)}%
               </Typography>
