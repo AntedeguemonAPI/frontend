@@ -53,20 +53,30 @@ export default function Page(): React.JSX.Element {
           {results.map((result, index) => (
             <Box key={index} sx={{ p: 2, border: '1px solid #ddd', borderRadius: 2 }}>
               <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                Similaridade: {(result.score * 100).toFixed(2)}%
+                <strong>Score:</strong> {(result.score * 100).toFixed(2)}%
               </Typography>
-
-              <Typography variant="h6" gutterBottom>
-                {result.descricao}
-              </Typography>
-
               <Typography variant="body2" gutterBottom>
-                <strong>Resposta sugerida:</strong> {result.resposta_sugerida || "Nenhuma resposta disponível."}
+                <strong>ID Chamado:</strong> {result.id_chamado}
               </Typography>
-
+              <Typography variant="body2" gutterBottom>
+                <strong>Data Abertura:</strong> {result.data_abertura}
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                <strong>Data Fechamento:</strong> {result.data_fechamento || 'Não finalizado'}
+              </Typography>
+              <Typography variant="h6" gutterBottom sx={{ mt: 1, mb: 1 }}>
+                <strong>Descrição:</strong> {result.descricao}
+              </Typography>
+              <Typography variant="body1" gutterBottom sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+                <strong>Resposta Sugerida:</strong> {result.resposta_sugerida || 'Nenhuma resposta disponível.'}
+              </Typography>
+              <Typography variant="body2" gutterBottom>
+                <strong>Tag Assunto:</strong> {result.tag_assunto}
+              </Typography>
               <Typography variant="body2" color="textSecondary">
-                <strong>Tempo de resposta:</strong> {typeof result.tempo_resposta_horas === 'number' 
-                  ? `${result.tempo_resposta_horas.toFixed(2)} horas`
+                <strong>Tempo de Resposta (horas):</strong>{' '}
+                {typeof result.tempo_resposta_horas === 'number'
+                  ? result.tempo_resposta_horas.toFixed(2)
                   : result.tempo_resposta_horas}
               </Typography>
             </Box>
