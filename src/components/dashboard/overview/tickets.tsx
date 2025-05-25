@@ -31,9 +31,10 @@ export function Tickets({ diff, trend, sx, value }: TicketsProps): React.JSX.Ele
               </Typography>
               <Typography variant="h4">{value}</Typography>
             </Stack>
-            <Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '56px', width: '56px' }}>
-              <ClockIcon fontSize="var(--icon-fontSize-lg)" />
-            </Avatar>
+<Avatar sx={{ backgroundColor: 'var(--mui-palette-primary-main)', height: '72px', width: '72px' }}>
+  <ClockIcon fontSize="48px" />
+</Avatar>
+
           </Stack>
 {/*           {diff ? (
             <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
