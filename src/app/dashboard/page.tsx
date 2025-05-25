@@ -48,12 +48,13 @@ export default function Page(): React.JSX.Element {
         <SpellingErrorsChart totalWithErrors={data.spellingErrors} total={data.totalTickets} />
       </Grid>
 
-      <Grid lg={12} xs={12}>
-        <WordChart
-          chartSeries={[{ name: 'Frequência', data: data.topicFrequencies.slice(0, 10) }]}
-          sx={{ height: '90%' }}
-        />
-      </Grid>
+    <Grid lg={12} xs={12}>
+      <WordChart
+        chartSeries={[{ name: 'Frequência', data: data.top10Words.map(item => item[1]) }]}
+        categories={data.top10Words.map(item => item[0])}
+        sx={{ height: '90%' }}
+      />
+    </Grid>
 
     <Grid lg={12} xs={12}>
       <TopicFrequencyChart

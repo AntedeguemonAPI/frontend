@@ -1,6 +1,6 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 
 interface DashboardData {
   averageResolutionTime: string;
@@ -12,47 +12,59 @@ interface DashboardData {
   totalTickets: number;
   topTopics: string[];
   topicFrequencies: number[];
+  top10Words: [string, number][];
 }
 
+
 export function useDashboardData() {
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<DashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      try {
+        const backendUrl = process.env.NEXT_PUBLIC_DB_URL;
+        const res = await fetch(`${backendUrl}/dashboard_dados`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
 
-      const payload: DashboardData = {
-        averageResolutionTime: '5.9 dias',
-        slaMet: 1074,
-        slaNotMet: 353,
-        statusOpen: 300,
-        statusClosed: 1127,
-        spellingErrors: 87,
-        totalTickets: 1427,
-        topTopics: [
-          'Erro',
-          'Senha',
-          'Acesso',
-          'Sistema',
-          'Atualizar',
-          'Conexão',
-          'Usuário',
-          'Rede',
-          'Login',
-          'Suporte',
-        ],
-        topicFrequencies: [120, 95, 80, 75, 70, 65, 60, 55, 50, 45],
-      };
+        if (!res.ok) {
+          throw new Error(`[${res.status}] ${res.statusText}`)
+        }
 
-      console.log('[useDashboardData] Dados simulados carregados:', payload);
+    const result = await res.json();
 
-      setData(payload);
-      setLoading(false);
-    };
+    const mockTop10Words: [string, number][] = [
+      ["solicitante", 987],
+      ["solicito", 455],
+      ["identificar", 385],
+      ["antena", 329],
+      ["colaborador", 328],
+      ["offline", 309],
+      ["ordem", 302],
+      ["email", 268],
+      ["switch", 248],
+      ["preventivo", 236],
+    ];
 
-    fetchData();
-  }, []);
+    // adiciona o mock no result
+    const resultWithMock = { ...result, top10Words: mockTop10Words };
 
-  return { data, loading };
+    console.log('[useDashboardData] 🔄 Dados recebidos:', resultWithMock);
+    setData(resultWithMock);
+      } catch (err) {
+        console.error('[useDashboardData] ❌ Erro ao buscar dados do dashboard:', err)
+        setData(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  return { data, loading }
 }

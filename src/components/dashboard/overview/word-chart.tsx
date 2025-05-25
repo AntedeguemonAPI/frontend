@@ -17,17 +17,18 @@ import { Chart } from '@/components/core/chart';
 
 export interface WordChartProps {
   chartSeries: { name: string; data: number[] }[];
+  categories: string[];
   sx?: SxProps;
 }
 
-export function WordChart({ chartSeries, sx }: WordChartProps): React.JSX.Element {
-  const chartOptions = useChartOptions();
+export function WordChart({ chartSeries, categories, sx }: WordChartProps): React.JSX.Element {
+  const chartOptions = useChartOptions(categories);
 
   return (
     <Card sx={sx}>
       <CardHeader
         action={
-          <Button color="inherit" size="small" startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />}>
+          <Button color="inherit" size="small" startIcon={<ArrowClockwiseIcon fontSize="var(--icon-fontSize-md)" />} >
             Atualizar
           </Button>
         }
@@ -46,7 +47,7 @@ export function WordChart({ chartSeries, sx }: WordChartProps): React.JSX.Elemen
   );
 }
 
-function useChartOptions(): ApexOptions {
+function useChartOptions(categories: string[]): ApexOptions {
   const theme = useTheme();
 
   return {
@@ -67,21 +68,19 @@ function useChartOptions(): ApexOptions {
     xaxis: {
       axisBorder: { color: theme.palette.divider, show: true },
       axisTicks: { color: theme.palette.divider, show: true },
-      categories: [
-        'Erro', 'Senha', 'Acesso', 'Sistema', 'Atualizar',
-        'Conexão', 'Usuário', 'Rede', 'Login', 'Suporte',
-      ],
+      categories, // ✅ agora dinâmico
       labels: { offsetY: 5, style: { colors: theme.palette.text.secondary } },
     },
     yaxis: {
       labels: {
-formatter: (val: unknown): string => {
-  const num = typeof val === 'number' ? val : Number(val);
-  return isNaN(num) ? '0%' : `${num.toFixed(1)}%`;
-},
+        formatter: (val: unknown): string => {
+          const num = typeof val === 'number' ? val : Number(val);
+          return isNaN(num) ? '0' : `${num}`;
+        },
         offsetX: -10,
         style: { colors: theme.palette.text.secondary },
       },
     },
   };
 }
+
