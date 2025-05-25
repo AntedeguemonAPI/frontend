@@ -44,7 +44,7 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         <Box sx={{ display: 'flex', flex: '1 1 auto', flexDirection: 'column', pl: { lg: user ? 'var(--SideNav-width)' : 0 } }}>
           <MainNav />
           <main>
-            <Container maxWidth="xl" sx={{ py: '64px' }}>
+            <Container maxWidth={false} sx={{ py: '64px' }}>
               {children}
             </Container>
           </main>

@@ -30,7 +30,7 @@ export default function MyProcessesPage(): React.JSX.Element {
   const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   // Novos estados para ordenação
   const [orderBy, setOrderBy] = React.useState<keyof any>('id');
